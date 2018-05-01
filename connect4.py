@@ -8,7 +8,7 @@ filter method is for removing whitespaces in array
 '''
 WIDTH = 7
 HEIGHT = 6
-DEPTH = 5
+DEPTH = 6
 VALUE = 10000000
 
 def parse_string_to_game_format(string):
@@ -52,6 +52,88 @@ def win(b, p):
                 return True
     return False
 
+def evaluate(b, p):
+    score = 0
+    # look horizontally
+    for i in range(HEIGHT):
+        count = 0
+        for j in range(WIDTH):
+            if(b[i*WIDTH + j] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+        score += pow(10, count-1) if count > 0 else 0
+    # look vertically
+    for j in range(WIDTH):
+        count = 0
+        for i in range(HEIGHT):
+            if(b[i*WIDTH + j] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+        score += pow(10, count-1) if count > 0 else 0
+    # look diagonally (from left to right)
+    for j in range(WIDTH):
+        k = j
+        i = 0
+        count = 0
+        while k < WIDTH and i < HEIGHT:
+            if(b[i*WIDTH + k] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+            k += 1
+            i += 1
+        score += pow(10, count-1) if count > 0 else 0
+
+    for i in range(1, HEIGHT):
+        j = 0
+        k = i
+        count = 0
+        while j < WIDTH and k < HEIGHT:
+            if(b[k*WIDTH + j] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+            k += 1
+            j += 1
+        score += pow(10, count-1) if count > 0 else 0
+
+    # look diagonally (from right to left)
+    for j in range(WIDTH):
+        k = j
+        i = 0
+        count = 0
+        while k >= 0 and i < HEIGHT:
+            if(b[i*WIDTH + k] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+            k -= 1
+            i += 1
+        score += pow(10, count-1) if count > 0 else 0
+
+    for i in range(1, HEIGHT):
+        j = WIDTH-1
+        k = i
+        count = 0
+        while j >= 0 and k < HEIGHT:
+            if(b[k*WIDTH + j] == p):
+                count += 1
+            elif(count > 0):
+                count = 0
+                score += pow(10, count)
+            k += 1
+            j -= 1
+        score += pow(10, count-1) if count > 0 else 0
+    return score
+
+
 # should return only the empty spaces where it is valid to play
 def getEmptySpaces(board):
     emptySpaces = []
@@ -72,7 +154,7 @@ def minimax(boardArr, player, ai, human, alpha, beta, depth):
         # in here you could calculate the score by evaluating the board according to any heusristic
         # like the number of 'o's and 'x' or if there are two, or three of them together, etc.
         # By leaving the score in 0, it just finds finds and tries to stop losing positions, in the given depth
-        return {'i' : -1, 'score' : 0}
+        return {'i' : -1, 'score' : evaluate(boardArr, ai) - evaluate(boardArr, human)}
 
     if(not emptySpaces):
         return {'i' : -1, 'score' : 0}
@@ -85,10 +167,10 @@ def minimax(boardArr, player, ai, human, alpha, beta, depth):
         tempString = ' '.join(temp)
         tempBoard, tempBoardArr = parse_string_to_game_format(tempString)
         if(win(temp, ai)):
-            next_move['score'] = 10
+            next_move['score'] = 1000
             return next_move
         elif(win(temp, human)):
-            next_move['score'] = -10
+            next_move['score'] = -1000
             return next_move
         else:
             if(player == ai):
@@ -151,6 +233,8 @@ def main():
     turn = human
 
     board, boardArr = parse_string_to_game_format(boardStr)
+    # print(board)
+    # print(evaluate(boardArr, ai))
     winner = endGame(boardArr)
     while(winner == -1):
         board, boardArr = parse_string_to_game_format(boardStr)
