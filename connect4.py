@@ -141,6 +141,7 @@ def endGame(board):
 	return -1
 
 def main():
+    print("Write the number of the column you want to drop the piece\n")
     ai = 'x'
     human = 'o'
 
