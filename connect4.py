@@ -1,4 +1,7 @@
 import copy
+import time
+from memory_profiler import profile
+
 
 '''
 this method receives a string
@@ -106,7 +109,6 @@ def minimax(boardArr, player, ai, human, alpha, beta, depth):
         if be <= al:
             break
 
-		
     best = {}
     if(player == ai):
       maxScore = -VALUE
@@ -139,7 +141,7 @@ def endGame(board):
 		return "WINNER: O"
 
 	return -1
-
+    
 def main():
     print("Write the number of the column you want to drop the piece\n")
     ai = 'x'
@@ -161,10 +163,14 @@ def main():
           boardArr[valid_move(boardArr, nextMove)] = turn
           turn = ai
         else:
-          nextMove = minimax(boardArr, ai, ai, human, -VALUE, VALUE, 0)
-          nextMove = nextMove['i']
-          boardArr[nextMove] = turn
-          turn = human
+            start = time.time()
+            print("hello")
+            end = time.time()
+            print(end - start)
+            nextMove = minimax(boardArr, ai, ai, human, -VALUE, VALUE, 0)
+            nextMove = nextMove['i']
+            boardArr[nextMove] = turn
+            turn = human
 
         boardStr = ' '.join(boardArr)
         winner = endGame(boardArr)
